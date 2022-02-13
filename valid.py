@@ -23,7 +23,7 @@ def valid(datacfg, modelcfg, weightfile):
                 return i
     
     # set result path
-    result_path = 'experimental_results'
+    result_path = '../experimental_results'
     c_id = datacfg.split('/')[1]
     #c_id = eng2id(datacfg.split('/')[1])
     c_kor = id2kor(c_id)
@@ -35,7 +35,6 @@ def valid(datacfg, modelcfg, weightfile):
     meshname = data_options['mesh']
     ###
     weightfile = weightfile.replace(c_id, c_eng)
-    #meshname = '../test_datasets' + '/' + c_id + '.' + c_kor + '/'+ c_id + '.'+ c_kor + '.원천데이터/' + c_id + '.' + c_kor + '.3D_Shape/' + meshname.split('/')[-1]
     meshname = 'new_dataset' + '/' + c_id + '.' + c_kor + '/'+ c_id + '.'+ c_kor + '.원천데이터/' + c_id + '.' + c_kor + '.3D_Shape/' + meshname.split('/')[-1]
     backupdir = data_options['backup']
     name = data_options['name']
@@ -209,7 +208,7 @@ def valid(datacfg, modelcfg, weightfile):
                 testing_samples += 1
                 
                 # csv write
-                context = data_id + ',' + gt + predict + '{:.2f}, {}, {:.2f}, {}\n'.format(pixel_dist, pixel_dist <= 20, iou, iou>=0.5)
+                context = data_id + ',' + gt + predict + '{:.2f}, {}, {:.2f}, {}\n'.format(pixel_dist, pixel_dist <= 20, iou_convex, iou_convex>=0.5)
                 c.write(context)
                 
                 count = count + 1
@@ -244,6 +243,7 @@ def valid(datacfg, modelcfg, weightfile):
     fid = open("{}/{}.txt".format(result_path, c_id), "w")
     fid.write("{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format( testing_error_pixel/nts, np.mean(errs_3d), proj_test05, proj_test, proj_test15, proj_test20, iou_test_c, iou_test25, iou_test, iou_test75))
     fid.close()
+    
 if __name__ == '__main__':
     # Parse configuration files
     parser = argparse.ArgumentParser(description='SingleShotPose')

@@ -10,6 +10,6 @@ for i in test_list:
         data = result.readline().split(' ')
         pixel_error = data[0]
         projection = data[3]
-        iou = data[8]
+        iou = data[6]
     report.write('{}\t{}\t{}%\t{}%\n'.format(i[:6], pixel_error, projection, iou))
 print('총 {}개 결과 종합 완료.'.format(len(test_list)))
