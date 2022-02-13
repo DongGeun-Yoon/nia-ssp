@@ -31,7 +31,7 @@
 ### 3. 객체 ID 별 유효성 검증 --> test.sh
 > ./test.sh 010118 <br>
 
-(평가 결과/로그 파일) ./experimental_results/ <br>
+(평가 결과/로그 파일) ../experimental_results/ <br>
 <br>
 
 ## * 유효성 검증 보고서
