@@ -16,7 +16,7 @@ from utils import *
 from MeshPly import MeshPly
 
 
-def valid(datacfg, modelcfg, weightfile):
+def valid(datacfg, modelcfg, weightfile, logging_command):
     def truths_length(truths, max_num_gt=50):
         for i in range(max_num_gt):
             if truths[i][1] == 0:
@@ -35,6 +35,7 @@ def valid(datacfg, modelcfg, weightfile):
     meshname = data_options['mesh']
     ###
     weightfile = weightfile.replace(c_id, c_eng)
+    #meshname = '../test_datasets' + '/' + c_id + '.' + c_kor + '/'+ c_id + '.'+ c_kor + '.원천데이터/' + c_id + '.' + c_kor + '.3D_Shape/' + meshname.split('/')[-1]
     meshname = 'new_dataset' + '/' + c_id + '.' + c_kor + '/'+ c_id + '.'+ c_kor + '.원천데이터/' + c_id + '.' + c_kor + '.3D_Shape/' + meshname.split('/')[-1]
     backupdir = data_options['backup']
     name = data_options['name']
@@ -102,6 +103,8 @@ def valid(datacfg, modelcfg, weightfile):
     class_name = test_loader.dataset.lines[0].split('/')[-1].split('_')[0]
     makedirs(result_path)
     c = open(os.path.join(result_path, class_name+'.csv'), 'w', encoding="UTF-8")
+    c.write('{}\n'.format(logging_command))
+    c.write('Running Start, {} \n'.format(datetime.datetime.now()))
     c.write('Data ID, x0-GT, y0-GT, x1-GT, y1-GT, x2-GT, y2-GT, x3-GT, y3-GT, x4-GT, y4-GT, x5-GT, y5-GT, x6-GT, y6-GT, x7-GT, y7-GT, x8-GT, y8-GT, x0-predict, y0-predict, x1-predict, y1-predict, x2-predict, y2-predict, x3-predict, y3-predict, x4-predict, y4-predict, x5-predict, y5-predict, x6-predict, y6-predict, x7-predict, y7-predict, x8-predict, y8-predict, pixel error, 2D projection, IoU, IoU score, \n')
     for batch_idx, (data, target, camera_info) in enumerate(test_loader):
         data_id = test_loader.dataset.lines[batch_idx].split('/')[-1][:-8]
@@ -212,7 +215,7 @@ def valid(datacfg, modelcfg, weightfile):
                 c.write(context)
                 
                 count = count + 1
-
+    c.write('Running END, {}'.format(datetime.datetime.now()))
     c.close()
     # Compute 2D projection error, 6D pose error, 5cm5degree error
     px_threshold = 20  # 5 pixel threshold for 2D reprojection error is standard in recent sota 6D object pose estimation works
@@ -243,15 +246,16 @@ def valid(datacfg, modelcfg, weightfile):
     fid = open("{}/{}.txt".format(result_path, c_id), "w")
     fid.write("{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format( testing_error_pixel/nts, np.mean(errs_3d), proj_test05, proj_test, proj_test15, proj_test20, iou_test_c, iou_test25, iou_test, iou_test75))
     fid.close()
-    
 if __name__ == '__main__':
     # Parse configuration files
     parser = argparse.ArgumentParser(description='SingleShotPose')
     parser.add_argument('--datacfg', type=str, default='data/sample/sample.data') # data config
     parser.add_argument('--modelcfg', type=str, default='cfg/yolo-pose.cfg') # network config
     parser.add_argument('--weightfile', type=str, default='data/sample/model/model.weights') # imagenet initialized weights
+    parser.add_argument('--command', type=str, default='python valid.py')
     args       = parser.parse_args()
     datacfg    = args.datacfg    
     modelcfg   = args.modelcfg
     weightfile = args.weightfile
-    valid(datacfg, modelcfg, weightfile)
+    logging_command = args.command
+    valid(datacfg, modelcfg, weightfile, logging_command)
